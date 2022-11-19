@@ -1,48 +1,46 @@
-#ifndef _MAIN_H
-#define _MAIN_H
+#ifndef _MAIN_H_
+#define _MAIN_H_
 
-/* All Standard Libraries */
 #include <stdio.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <limits.h>
 
-/* Type Definition of Structure */
 /**
- * struct format - Data type of a structured format
- * @specifier: Specifier formats
- * @print_func: Print functions
+ * struct print - Struct op
+ *
+ * @c: the character or format specifier
+ * @func: function that prints data with the specifier
  */
-
-typedef struct format
+typedef struct print
 {
-        char *specifier;
-        int (*print_func)(va_list arg);
-} formatType;
+	/* char *c: formats c, s, b, i, d, o, x, ... */
+	char *c;
+	/* A function that collects the variable list data and prints with it */
+	int (*func)(va_list);
+} prn;
 
-/* General Functions */
 int _putchar(char c);
 int _printf(const char *format, ...);
 
-/* General Functions */
-int _putchar(char c);
-int _printf(const char *format, ...);
+/* returns a pointer to the function to execute using structs */
+int (*get_func(const char *, int))(va_list);
 
-/* Other Functions */
-int validate_format(const char *format, va_list arg, formatType *specStruct);
-
-/* Type Print Functions */
-int print_char(va_list argument);
-int print_str(va_list argument);
-int print_int(va_list argument);
-
-/* Type Print Special Functions */
-int print_bin(va_list argument);
-int print_revStr(va_list argument);
-int print_rot13(va_list argument);
-char rotate(char c, int key);
+/* Conversion specifier function prototypes */
+int print_bin(va_list);
+int print_char(va_list);
+int print_number(va_list);
+int print_octal(va_list);
+int print_percent(va_list);
+int print_str(va_list);
+int print_unsigned_dec(va_list);
+int print_unsigned_hex(va_list);
+int print_unsigned_HEX(va_list);
+int print_STR(va_list);
+int print_addr(va_list);
+void print_HEX(long int, unsigned int, unsigned int);
+/* b, c, d & i, o, %, s, u, x, X */
 
 #endif
