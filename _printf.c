@@ -1,79 +1,50 @@
 #include "main.h"
 
 /**
- * _printf - Prints to standard output like printf function
- * @format: Format to be printed
+ * _printf - a function that produces output according to a format and argument
+ * @format: string containing the regular chars and format specifiers to print
  *
- * Return: Always 0
+ * Return: the total number of characters printed
  */
-
 int _printf(const char *format, ...)
 {
-	va_list arg;
-	int printCount;
+	/* Declare a variable list, with its own argument(begins at va_start) */
+	va_list list;
+	int i = 0, count = 0;
+	/* a function pointer, that accepts va_list as argument */
+	int (*ptr_func)(va_list);
 
-	formatType specStruct[] = {
-		{"c", print_char},
-		{"s", print_str},
-		{"i", print_int},
-		{"d", print_int},
-		{"b", print_bin},
-		{"r", print_revStr},
-		{"R", print_rot13},
-	};
-	printCount = 0;
-	if (format == NULL)
+	/* Returns -1 if format is null */
+	if (!format || (format[i] == '%' && format[i + 1] == '\0'))
 		return (-1);
-	va_start(arg, format);
-	printCount = validate_format(format, arg, specStruct);
-	va_end(arg);
+	if (!format[i])
+		return (0);
 
-	return (printCount);
-}
-
-/**
- * validate_format - Function that produces output according to a format.
- * @format: Pointer
- * @arg: va_list
- * @specStruct: struct
- * Return: Always 0
- */
-int validate_format(const char *format, va_list arg, formatType *specStruct)
-{
-	int i = 0, indexB = 0, prtCount = 0;
-
-	while (format && format[i])
+	va_start(list, format);
+	for (i = 0; format[i] != '\0'; i++)
 	{
-		if (format[i] == '%' && format[i + 1] == '\0')
-			return (-1);
-		if (format[i] == '%' && (format[i + 1] == ' ' || format[i + 1] != '%'))
+		if (format[i] == '%')
 		{
-			if (format[i + 1] == ' ')
+			if (format[i + 1] == '\0')
+				return (-1);
+
+			ptr_func = get_func(format, i + 1);
+			if (ptr_func == NULL)
 			{
-				while (format[i + 1] == ' ')
-					i++;
+				_putchar('%');
+				count++;
 			}
-			while (indexB < 7)
+			else
 			{
-				if (specStruct[indexB].specifier[0] == format[i + 1])
-				{
-					prtCount += specStruct[indexB].print_func(arg);
-					i++;
-					break;
-				} indexB++;
+				count += ptr_func(list);
+				i++;
 			}
-			if (indexB == 6)
-				prtCount += _putchar('%');
-		}
-		else if (format[i] == '%' && format[i + 1] == '%')
-		{
-			prtCount += _putchar('%');
-			i++;
 		}
 		else
 		{
-			prtCount += _putchar(format[i]);
-		} i++, indexB = 0;
+			_putchar(format[i]);
+			count++;
+		}
 	}
-	return (prtCount);
+	return (count);
 }
